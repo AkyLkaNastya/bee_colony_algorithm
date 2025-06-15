@@ -335,14 +335,28 @@ B = [
     "B-n68-k9.vrp", "B-n78-k10.vrp"
 ]
 
-solutions_num = 300
-base_penalty = 200
-sol_stognation = 2000
-best_stognation = 700000
-beta = 0.8
+param_grid = {
+    'solutions_num': [100, 150, 175, 200, 250, 300],
+    'base_penalty': [100, 200, 300, 400, 500],
+    'sol_stognation': [1000, 1500, 2000, 2500, 3000, 3500],
+    'best_stognation': [100000, 200000, 300000, 400000,500000],
+    'beta': [0.1, 0.5, 1.0]
+}
 
-# Обработка папки "А"
-process_files(A, 'A', 'A_results.csv', solutions_num, base_penalty, sol_stognation, best_stognation, beta)
+import optuna
 
-# Обработка папки "B"
-process_files(B, 'B', 'B_results.csv', solutions_num, base_penalty, sol_stognation, best_stognation, beta)
+def objective(trial):
+    solutions_num = trial.suggest_int('solutions_num', 50, 400)
+    base_penalty = trial.suggest_int('base_penalty', 100, 400)
+    sol_stognation = trial.suggest_int('sol_stognation', 1000, 4000)
+    best_stognation = trial.suggest_int('best_stognation', 300000, 500000)
+    beta = trial.suggest_float('beta', 0.1, 1.0)
+
+    # Загрузка тестовых данных (например, одного файла)
+    data = file_reader('A/A-n32-k5.vrp')
+    best_result = bee_colony_algorithm(data, solutions_num, base_penalty, sol_stognation, best_stognation, beta)
+    return best_result['z']
+
+study = optuna.create_study(direction='minimize')
+study.optimize(objective, n_trials=50)
+print(study.best_params)
