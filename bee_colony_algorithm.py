@@ -335,10 +335,10 @@ B = [
     "B-n68-k9.vrp", "B-n78-k10.vrp"
 ]
 
-solutions_num = 300
-base_penalty = 200
+solutions_num = 200
+base_penalty = 150
 sol_stognation = 2000
-best_stognation = 700000
+best_stognation = 500000
 beta = 0.8
 
 # Обработка папки "А"
